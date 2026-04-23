@@ -5,6 +5,12 @@ export default definePackage({
   kind: "plugin",
   version: "0.1.0",
   displayName: "Automation Core",
+  defaultCategory: {
+    id: "platform_governance",
+    label: "Platform Governance",
+    subcategoryId: "automation",
+    subcategoryLabel: "Automation"
+  },
   description: "Scheduled, API, and webhook-triggered routines with governed concurrency, catch-up policy, and operator follow-up loops.",
   extends: [],
   dependsOn: [

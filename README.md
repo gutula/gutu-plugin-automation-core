@@ -4,11 +4,9 @@
   <img src="./docs/assets/gutu-mascot.png" alt="Gutu mascot" width="220" />
 </p>
 
-Scheduled, API, and webhook-triggered routines with concurrency policy, catch-up policy, issue-drive autopilot posture, and operator follow-up loops for governed work execution.
+Scheduled, API, and webhook-triggered routines with governed concurrency, catch-up policy, and operator follow-up loops.
 
-![Maturity: Hardened](https://img.shields.io/badge/Maturity-Hardened-0f766e) ![Verification: Docs+Build+Typecheck+Lint+Test+Contracts+Integration+Migrations](https://img.shields.io/badge/Verification-Docs%2BBuild%2BTypecheck%2BLint%2BTest%2BContracts%2BIntegration%2BMigrations-6b7280) ![DB: postgres+sqlite](https://img.shields.io/badge/DB-postgres%2Bsqlite-2563eb) ![Integration Model: Actions+Resources+UI](https://img.shields.io/badge/Integration%20Model-Actions%2BResources%2BUI-6b7280)
-
-**Maturity Tier:** `Hardened`
+![Maturity: Hardened](https://img.shields.io/badge/Maturity-Hardened-2563eb) ![Verification: Build+Typecheck+Lint+Test+Contracts+Migrations+Integration](https://img.shields.io/badge/Verification-Build%2BTypecheck%2BLint%2BTest%2BContracts%2BMigrations%2BIntegration-2563eb) ![DB: postgres+sqlite](https://img.shields.io/badge/DB-postgres%2Bsqlite-2563eb) ![Integration Model: Actions+Resources+Jobs+UI](https://img.shields.io/badge/Integration%20Model-Actions%2BResources%2BJobs%2BUI-2563eb)
 
 ## Part Of The Gutu Stack
 
@@ -16,32 +14,36 @@ Scheduled, API, and webhook-triggered routines with concurrency policy, catch-up
 | --- | --- |
 | Repo kind | First-party plugin |
 | Domain group | Platform Backbone |
-| Primary focus | routines, routine runs, follow-up inboxes, SLA-aware automation loops |
-| Best when | You want `paperclip`-style routines and collaboration loops without making timers and reminders invisible side effects. |
-| Composes through | Actions+Resources+UI |
+| Default category | Platform Governance / Automation |
+| Primary focus | automation definitions, scheduled execution, governed follow-up |
+| Best when | You need a governed domain boundary with explicit contracts and independent release cadence. |
+| Composes through | Actions+Resources+Jobs+UI |
 
-- `automation-core` turns schedules, API triggers, and webhook triggers into typed platform objects with explicit concurrency and catch-up policy.
-- It reuses `jobs-core`, `workflow-core`, and `notifications-core` instead of building a parallel scheduler stack.
+- Gutu keeps plugins as independent repos with manifest-governed boundaries, compatibility channels, and verification lanes instead of hiding everything behind one giant mutable codebase.
+- This plugin is meant to compose through explicit actions, resources, jobs, workflows, and runtime envelopes, not through undocumented hook chains.
 
 ## What It Does Now
 
+Coordinates automation definitions, recurring execution, and governed follow-up behavior without hiding work inside undocumented cron glue.
+
 - Exports 4 governed actions: `automation.routines.create`, `automation.routines.update`, `automation.routines.trigger`, `automation.dead-letters.replay`.
-- Owns 3 public resources: `automation.routines`, `automation.routine-runs`, `automation.dead-letters`.
-- Adds an `automation` workspace with a control room and an inbox surface for waiting-human and escalated runs.
-- Persists concurrency policy, catch-up policy, issue-drive mode, runtime targeting, manual trigger posture, workflow linkage, queue-facing notification state, and dead-letter replay posture for each routine run.
-- Links routine runs to collaboration issues and runtime sessions when autopilot routines are configured for operator-facing follow-up.
-- Covers schedule, API, webhook, issue-drive, and runtime-targeted operator follow-up loops in tests.
+- Owns 3 resource contracts: `automation.routines`, `automation.routine-runs`, `automation.dead-letters`.
+- Adds richer admin workspace contributions on top of the base UI surface.
+- Defines a durable data schema contract even though no explicit SQL helper module is exported.
 
 ## Maturity
 
-`automation-core` is `Hardened` because routine behavior is durable, policy-driven, operator-visible, and verified across unit, contract, integration, and migration lanes.
+**Maturity Tier:** `Hardened`
+
+This tier is justified because unit coverage exists, contract coverage exists, integration coverage exists, and migration coverage exists.
 
 ## Verified Capability Summary
 
-- Group: **Platform Backbone**
-- Verification surface: **Docs+Build+Typecheck+Lint+Test+Contracts+Integration+Migrations**
-- Tests discovered: **6** files across unit, contract, integration, and migration lanes
-- Integration model: **Actions+Resources+UI**
+- Domain group: **Platform Backbone**
+- Default category: **Platform Governance / Automation**
+- Verification surface: **Build+Typecheck+Lint+Test+Contracts+Migrations+Integration**
+- Tests discovered: **6** total files across unit, contract, integration, migration lanes
+- Integration model: **Actions+Resources+Jobs+UI**
 - Database support: **postgres + sqlite**
 
 ## Dependency And Compatibility Summary
@@ -50,13 +52,13 @@ Scheduled, API, and webhook-triggered routines with concurrency policy, catch-up
 | --- | --- |
 | Package | `@plugins/automation-core` |
 | Manifest ID | `automation-core` |
-| Repo | `gutu-plugin-automation-core` |
-| Depends On | `auth-core`, `org-tenant-core`, `role-policy-core`, `audit-core`, `jobs-core`, `workflow-core`, `notifications-core`, `issues-core`, `runtime-bridge-core` |
+| Repo | [gutu-plugin-automation-core](https://github.com/gutula/gutu-plugin-automation-core) |
+| Depends On | `auth-core`, `org-tenant-core`, `role-policy-core`, `audit-core`, `jobs-core`, `issues-core`, `workflow-core`, `notifications-core`, `runtime-bridge-core` |
 | Requested Capabilities | `ui.register.admin`, `api.rest.mount`, `data.write.automation`, `jobs.execute.ai`, `workflow.execute.ai`, `notifications.enqueue.ai` |
 | Provided Capabilities | `automation.routines`, `automation.routine-runs` |
 | Runtime | bun>=1.3.12 |
 | Database | postgres, sqlite |
-| Integration Model | Actions+Resources+UI |
+| Integration Model | Actions+Resources+Jobs+UI |
 
 ## Capability Matrix
 
@@ -64,15 +66,22 @@ Scheduled, API, and webhook-triggered routines with concurrency policy, catch-up
 | --- | --- | --- |
 | Actions | 4 | `automation.routines.create`, `automation.routines.update`, `automation.routines.trigger`, `automation.dead-letters.replay` |
 | Resources | 3 | `automation.routines`, `automation.routine-runs`, `automation.dead-letters` |
-| Workspaces | 1 | `automation` |
-| Inbox Surfaces | 1 | routine waiting-human and escalation queue |
-| UI | Present | control room, inbox, admin commands |
+| Jobs | 0 | No job catalog exported |
+| Workflows | 0 | No workflow catalog exported |
+| UI | Present | base UI surface, admin contributions |
+| Owned Entities | 0 | No explicit domain catalog yet |
+| Reports | 0 | No explicit report catalog yet |
+| Exception Queues | 0 | No explicit exception queues yet |
+| Operational Scenarios | 0 | No explicit operational scenario matrix yet |
+| Settings Surfaces | 0 | No explicit settings surface catalog yet |
+| ERPNext Refs | 0 | No direct ERPNext reference mapping declared |
 
 ## Quick Start For Integrators
 
-Use this repo inside a compatible Gutu workspace so its `workspace:*` dependencies resolve truthfully.
+Use this repo inside a **compatible Gutu workspace** or the **ecosystem certification workspace** so its `workspace:*` dependencies resolve honestly.
 
 ```bash
+# from a compatible workspace that already includes this plugin's dependency graph
 bun install
 bun run build
 bun run test
@@ -80,19 +89,14 @@ bun run docs:check
 ```
 
 ```ts
-import {
-  manifest,
-  createRoutineAction,
-  triggerRoutineAction,
-  RoutineResource,
-  RoutineRunResource
-} from "@plugins/automation-core";
+import { manifest, createRoutineAction, RoutineResource, adminContributions, uiSurface } from "@plugins/automation-core";
 
 console.log(manifest.id);
 console.log(createRoutineAction.id);
-console.log(triggerRoutineAction.id);
-console.log(RoutineResource.id, RoutineRunResource.id);
+console.log(RoutineResource.id);
 ```
+
+Use the root repo scripts for day-to-day work **after the workspace is bootstrapped**, or run the nested package directly from `framework/builtin-plugins/automation-core` if you need lower-level control.
 
 ## Current Test Coverage
 
@@ -104,18 +108,25 @@ console.log(RoutineResource.id, RoutineRunResource.id);
 
 ## Known Boundaries And Non-Goals
 
-- This plugin does not replace Codex desktop automations or heartbeat scheduling; it models platform routines inside the framework runtime.
-- It currently relies on same-process scheduler composition via `jobs-core`.
-- Long-horizon schedule materialization and fleet-wide pause or resume posture are not exported yet.
-- It links to collaboration issues and runtime sessions but does not own those lower-level control planes.
+- Not a generic WordPress-style hook bus or plugin macro system.
+- Not a product-specific UX suite beyond the exported admin or portal surfaces that ship today.
+- Cross-plugin composition should use Gutu command, event, job, and workflow primitives. This repo should not be documented as exposing a generic WordPress-style hook system unless one is explicitly exported.
 
 ## Recommended Next Milestones
 
-- Add richer scheduler crash recovery and replay reports.
-- Expand SLA dashboards for reminders, escalations, and missed-trigger analysis.
-- Add policy-aware bulk pause/resume controls for routine fleets.
-- Add issue-board and runtime-console pivots directly from autopilot run history.
+- Add stronger operator diagnostics and replay controls where automations start owning more business-critical follow-up work.
+- Clarify execution handoff patterns with jobs, workflows, and notifications as automation coverage broadens.
+- Add stronger operator-facing reconciliation and observability surfaces where runtime state matters.
+- Promote any currently implicit cross-plugin lifecycles into explicit command, event, or job contracts when those integrations stabilize.
+- Promote important downstream reactions into explicit commands, jobs, or workflow steps instead of relying on implicit coupling.
 
 ## More Docs
 
-See [DEVELOPER.md](./DEVELOPER.md), [TODO.md](./TODO.md), [SECURITY.md](./SECURITY.md), and [CONTRIBUTING.md](./CONTRIBUTING.md).
+See [DEVELOPER.md](./DEVELOPER.md), [TODO.md](./TODO.md), [SECURITY.md](./SECURITY.md), [CONTRIBUTING.md](./CONTRIBUTING.md). The internal domain sources used to build those docs live under:
+
+- `plugins/gutu-plugin-automation-core/framework/builtin-plugins/automation-core/docs/AGENT_CONTEXT.md`
+- `plugins/gutu-plugin-automation-core/framework/builtin-plugins/automation-core/docs/BUSINESS_RULES.md`
+- `plugins/gutu-plugin-automation-core/framework/builtin-plugins/automation-core/docs/EDGE_CASES.md`
+- `plugins/gutu-plugin-automation-core/framework/builtin-plugins/automation-core/docs/FLOWS.md`
+- `plugins/gutu-plugin-automation-core/framework/builtin-plugins/automation-core/docs/GLOSSARY.md`
+- `plugins/gutu-plugin-automation-core/framework/builtin-plugins/automation-core/docs/MANDATORY_STEPS.md`

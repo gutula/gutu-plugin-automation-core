@@ -4,28 +4,24 @@
 
 ## Shipped Now
 
-- Added durable routines and routine-run resources.
-- Added create, update, and trigger action contracts.
-- Added `automation` control room and inbox surfaces.
-- Added issue-drive autopilot composition through `issues-core` and `runtime-bridge-core`.
-- Added routine posture for operation mode, runtime targeting, linked issue/session records, and manual-trigger gating.
-- Added integration and migration tests covering concurrency, waiting-human, follow-up, issue-drive, and runtime-targeted behavior.
-- Added dead-letter persistence and replay flows for failed routine runs.
+- Exports 4 governed actions: `automation.routines.create`, `automation.routines.update`, `automation.routines.trigger`, `automation.dead-letters.replay`.
+- Owns 3 resource contracts: `automation.routines`, `automation.routine-runs`, `automation.dead-letters`.
+- Adds richer admin workspace contributions on top of the base UI surface.
+- Defines a durable data schema contract even though no explicit SQL helper module is exported.
 
 ## Current Gaps
 
-- Long-horizon schedule materialization is not modeled yet.
-- Routine fleet-level analytics can go deeper.
-- Autopilot policy authoring is still lightweight compared with the richer builder publish machinery elsewhere in the stack.
+- No standalone plugin-owned event, job, or workflow catalog is exported yet; compose it through actions, resources, and the surrounding Gutu runtime.
+- The repo does not yet export a domain parity catalog with owned entities, reports, settings surfaces, and exception queues.
 
 ## Recommended Next
 
-- Add scheduler crash-recovery and missed-trigger analysis.
-- Add richer SLA dashboards for reminders, escalations, and inbox pressure.
-- Add policy-aware bulk pause and resume for routine fleets.
-- Add deeper issue-board and runtime-console pivots for autopilot operators.
+- Add stronger operator diagnostics and replay controls where automations start owning more business-critical follow-up work.
+- Clarify execution handoff patterns with jobs, workflows, and notifications as automation coverage broadens.
+- Add stronger operator-facing reconciliation and observability surfaces where runtime state matters.
+- Promote any currently implicit cross-plugin lifecycles into explicit command, event, or job contracts when those integrations stabilize.
+- Promote important downstream reactions into explicit commands, jobs, or workflow steps instead of relying on implicit coupling.
 
 ## Later / Optional
 
-- Rich import/export for routine packs after schedule semantics stabilize.
-- Cross-workspace routine federation for larger multi-tenant operators.
+- Dedicated federation or external identity/provider adapters once the core contracts are stable.
